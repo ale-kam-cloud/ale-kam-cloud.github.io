@@ -112,13 +112,8 @@ input[type=range]{width:100%}
 
       <div class="sep"></div>
 
-      <div class="price">
-        <span>Costo energia domestica €/kWh</span>
-        <input id="homePrice" type="number" step=".01" value=".30">
-      </div>
-
       <div class="source">
-        Casa: 0,30 €/kWh modificabile. Supercharger: 0,42 €/kWh. I carburanti sono valori di riferimento del prototipo; nella versione online potranno essere aggiornati automaticamente.
+        Casa: 0,30 €/kWh. Supercharger: 0,42 €/kWh. I carburanti sono valori di riferimento del prototipo; nella versione online potranno essere aggiornati automaticamente.
       </div>
     </aside>
 
@@ -189,7 +184,7 @@ let chargeMode = "home";
 
 function money(n){ return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",minimumFractionDigits:2}).format(n); }
 function num(n,d=1){ return new Intl.NumberFormat("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d}).format(n); }
-function homePrice(){ return Math.max(0, parseFloat(document.getElementById("homePrice").value)||0); }
+function homePrice(){ return 0.30; }
 
 function priceLabel(car){
   if(car.type==="ev"){
@@ -265,8 +260,6 @@ const range = document.getElementById("kmRange");
 const input = document.getElementById("kmInput");
 range.addEventListener("input", () => { input.value = range.value; render(); });
 input.addEventListener("input", () => { range.value = Math.min(50000, Math.max(5000, input.value||5000)); render(); });
-document.getElementById("homePrice").addEventListener("input", render);
-
 render();
 </script>
 </body>
