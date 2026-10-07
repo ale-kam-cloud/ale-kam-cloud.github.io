@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Elettrico: quanto risparmi davvero? — Confronto consumi auto</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#fff; --ink:#111827; --muted:#667085; --line:#e5e7eb;
+  --green:#0f766e; --soft:#ecfdf5;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1220px;margin:auto;padding:28px 18px 60px}
+.hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:20px}
+h1{font-size:clamp(28px,4vw,48px);letter-spacing:-.04em;margin:0 0 6px}
+.sub{color:var(--muted);margin:0;max-width:760px;line-height:1.45}
+.badge{background:#111827;color:#fff;padding:8px 11px;border-radius:999px;font-size:12px;white-space:nowrap}
+
+.tabs{display:flex;gap:8px;margin:22px 0}
+.tab{
+  display:inline-block;border:1px solid #cfd4dc;background:#fff;color:#344054;
+  border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer
+}
+.tab.active{background:#111827;color:#fff;border-color:#111827}
+
+.grid{display:grid;grid-template-columns:280px 1fr;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 5px 20px rgba(16,24,40,.04)}
+.card h2{font-size:17px;margin:0 0 14px}
+.field{margin:0 0 14px}
+label{display:flex;justify-content:space-between;gap:14px;font-size:13px;font-weight:700;margin-bottom:6px}
+input[type=number]{width:100%;border:1px solid #d0d5dd;border-radius:10px;padding:11px 12px;font-size:15px;background:#fff}
+.range-row{display:grid;grid-template-columns:1fr 90px;gap:10px;align-items:center}
+input[type=range]{width:100%}
+.sep{height:1px;background:var(--line);margin:18px 0}
+.price{border:1px solid var(--line);border-radius:12px;padding:10px}
+.price span{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.source{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.45}
+
+.switchbar{display:flex;align-items:center;gap:10px;margin:8px 0 16px}
+.switchbar .lbl{font-size:12px;font-weight:700;color:var(--muted)}
+.charge-btn{
+  border:1px solid #cfd4dc;background:#fff;color:#344054;border-radius:10px;
+  padding:8px 12px;font-weight:700;cursor:pointer
+}
+.charge-btn.active{background:#111827;color:#fff;border-color:#111827}
+
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.kpi{border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi .v{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.kpi .l{font-size:12px;color:var(--muted);margin-top:3px}
+
+.table-head,
+.row{
+  display:grid;
+  grid-template-columns:minmax(210px,1.5fr) 120px 105px 115px 115px 125px;
+  gap:10px;align-items:center
+}
+.table-head{padding:0 14px 8px;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.table-head div:not(:first-child){text-align:right}
+.result-list{display:flex;flex-direction:column;gap:9px}
+.row{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.row.tesla{border-color:#99d5cc;background:var(--soft)}
+.car{font-weight:800}
+.meta{font-size:12px;color:var(--muted);margin-top:3px}
+.num{text-align:right}
+.num strong{display:block;font-size:16px}
+.num span{font-size:11px;color:var(--muted)}
+.delta{font-weight:800}
+.delta.plus{color:#b45309}
+.delta.zero{color:#111827}
+.note{margin-top:14px;border-radius:14px;padding:12px 14px;background:#fffaeb;color:#7a2e0e;font-size:12px;line-height:1.45}
+.footer{margin-top:18px;color:var(--muted);font-size:12px}
+
+@media(max-width:980px){
+  .hero{display:block}
+  .badge{display:inline-block;margin-top:12px}
+  .grid{grid-template-columns:1fr}
+  .table-head{display:none}
+  .row{grid-template-columns:1fr 1fr}
+  .row > div:first-child{grid-column:1/-1}
+  .num{text-align:left}
+  .kpis{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Elettrico: quanto risparmi davvero?</h1>
+      <p class="sub">Confronta il costo energetico reale di Tesla Model 3 o Model Y con benzina, diesel, full hybrid, GPL e metano.</p>
+    </div>
+    <div class="badge">Prototipo • solo costo energia/carburante</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-segment="m3">Tesla Model 3</button>
+    <button class="tab" data-segment="my">Tesla Model Y</button>
+  </div>
+
+  <div class="grid">
+    <aside class="card">
+      <h2>Il tuo utilizzo</h2>
+      <div class="field">
+        <label>Km all'anno <span id="kmOut">15.000 km</span></label>
+        <div class="range-row">
+          <input id="kmRange" type="range" min="5000" max="50000" step="1000" value="15000">
+          <input id="kmInput" type="number" min="1000" max="100000" step="1000" value="15000">
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="price">
+        <span>Costo energia domestica €/kWh</span>
+        <input id="homePrice" type="number" step=".01" value=".30">
+      </div>
+
+      <div class="source">
+        Casa: 0,30 €/kWh modificabile. Supercharger: 0,42 €/kWh. I carburanti sono valori di riferimento del prototipo; nella versione online potranno essere aggiornati automaticamente.
+      </div>
+    </aside>
+
+    <main class="card">
+      <div class="kpis">
+        <div class="kpi"><div class="v" id="tesla100">—</div><div class="l">Tesla / 100 km</div></div>
+        <div class="kpi"><div class="v" id="teslaYear">—</div><div class="l">Tesla / anno</div></div>
+        <div class="kpi"><div class="v" id="maxDelta">—</div><div class="l">massimo extra costo annuo</div></div>
+      </div>
+
+      <h2 id="title">Confronto Model 3</h2>
+
+      <div class="switchbar">
+        <span class="lbl">Costo Tesla:</span>
+        <button class="charge-btn active" data-mode="home">Casa</button>
+        <button class="charge-btn" data-mode="sc">Supercharger</button>
+      </div>
+
+      <div class="table-head">
+        <div>Auto</div>
+        <div>Alimentazione</div>
+        <div>Prezzo</div>
+        <div>Costo / 100 km</div>
+        <div>Costo annuo</div>
+        <div>Vs Tesla</div>
+      </div>
+
+      <div class="result-list" id="results"></div>
+
+      <div class="note">
+        La classifica è ordinata dalla spesa annuale più bassa alla più alta. La differenza di costo è sempre calcolata rispetto alla Tesla con la modalità di ricarica selezionata. Per la ricarica domestica viene applicata una perdita AC del 6%.
+      </div>
+      <div class="footer">Il confronto riguarda esclusivamente energia e carburante. Non include acquisto, bollo, assicurazione o manutenzione.</div>
+    </main>
+  </div>
+</div>
+
+<script>
+const PRICES = {
+  sc: 0.42,
+  petrol: 2.10,
+  diesel: 2.20,
+  lpg: 0.78,
+  cng: 1.80
+};
+
+const DATA = {
+  m3: [
+    {name:"Tesla Model 3 RWD", fuel:"Elettrica", cons:15, unit:"kWh/100 km", type:"ev", tesla:true},
+    {name:"Volkswagen Passat 1.5 eTSI", fuel:"Benzina / mild hybrid", cons:6.5, unit:"l/100 km", type:"petrol"},
+    {name:"Volkswagen Passat 2.0 TDI", fuel:"Diesel", cons:5.0, unit:"l/100 km", type:"diesel"},
+    {name:"Toyota Corolla 2.0 Hybrid", fuel:"Full hybrid", cons:5.0, unit:"l/100 km", type:"petrol"},
+    {name:"Fiat Tipo 1.4 GPL", fuel:"GPL", cons:8.0, unit:"l/100 km", type:"lpg"},
+    {name:"Skoda Octavia 1.5 G-TEC", fuel:"Metano", cons:3.5, unit:"kg/100 km", type:"cng"}
+  ],
+  my: [
+    {name:"Tesla Model Y RWD", fuel:"Elettrica", cons:17, unit:"kWh/100 km", type:"ev", tesla:true},
+    {name:"Volkswagen Tiguan 1.5 eTSI", fuel:"Benzina / mild hybrid", cons:7.0, unit:"l/100 km", type:"petrol"},
+    {name:"Volkswagen Tiguan 2.0 TDI", fuel:"Diesel", cons:5.7, unit:"l/100 km", type:"diesel"},
+    {name:"Toyota RAV4 Hybrid", fuel:"Full hybrid", cons:6.0, unit:"l/100 km", type:"petrol"},
+    {name:"Dacia Bigster Hybrid-G", fuel:"GPL", cons:7.2, unit:"l/100 km", type:"lpg"},
+    {name:"Skoda Octavia 1.5 G-TEC", fuel:"Metano", cons:3.5, unit:"kg/100 km", type:"cng"}
+  ]
+};
+
+let segment = "m3";
+let chargeMode = "home";
+
+function money(n){ return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",minimumFractionDigits:2}).format(n); }
+function num(n,d=1){ return new Intl.NumberFormat("it-IT",{minimumFractionDigits:d,maximumFractionDigits:d}).format(n); }
+function homePrice(){ return Math.max(0, parseFloat(document.getElementById("homePrice").value)||0); }
+
+function priceLabel(car){
+  if(car.type==="ev"){
+    return chargeMode==="home" ? `${num(homePrice(),2)} €/kWh` : `${num(PRICES.sc,2)} €/kWh`;
+  }
+  if(car.type==="petrol") return `${num(PRICES.petrol,2)} €/l`;
+  if(car.type==="diesel") return `${num(PRICES.diesel,2)} €/l`;
+  if(car.type==="lpg") return `${num(PRICES.lpg,2)} €/l`;
+  if(car.type==="cng") return `${num(PRICES.cng,2)} €/kg`;
+}
+
+function cost100(car){
+  if(car.type==="ev"){
+    if(chargeMode==="home") return car.cons * 1.06 * homePrice();
+    return car.cons * PRICES.sc;
+  }
+  if(car.type==="petrol") return car.cons * PRICES.petrol;
+  if(car.type==="diesel") return car.cons * PRICES.diesel;
+  if(car.type==="lpg") return car.cons * PRICES.lpg;
+  if(car.type==="cng") return car.cons * PRICES.cng;
+}
+
+function render(){
+  const km = Math.max(0, parseFloat(document.getElementById("kmInput").value)||0);
+  document.getElementById("kmOut").textContent = new Intl.NumberFormat("it-IT").format(km)+" km";
+  document.getElementById("title").textContent = segment==="m3" ? "Confronto Model 3" : "Confronto Model Y";
+
+  let rows = DATA[segment].map(c => ({...c, c100: cost100(c)}));
+  rows.forEach(r => r.year = r.c100 * km / 100);
+
+  const tesla = rows.find(r => r.tesla);
+  rows.sort((a,b) => a.year - b.year);
+
+  document.getElementById("tesla100").textContent = money(tesla.c100);
+  document.getElementById("teslaYear").textContent = money(tesla.year);
+  document.getElementById("maxDelta").textContent = money(Math.max(...rows.filter(r => !r.tesla).map(r => r.year - tesla.year)));
+
+  document.getElementById("results").innerHTML = rows.map(r => {
+    const delta = r.year - tesla.year;
+    const deltaHtml = r.tesla
+      ? `<strong class="delta zero">—</strong><span>riferimento</span>`
+      : `<strong class="delta plus">+ ${money(delta)}</strong><span>/ anno</span>`;
+
+    return `<div class="row ${r.tesla ? 'tesla' : ''}">
+      <div>
+        <div class="car">${r.name}</div>
+        <div class="meta">${num(r.cons,1)} ${r.unit}${r.tesla ? ` • ${chargeMode==="home" ? "ricarica a casa" : "Supercharger"}` : ""}</div>
+      </div>
+      <div class="num"><strong>${r.fuel}</strong><span>alimentazione</span></div>
+      <div class="num"><strong>${priceLabel(r)}</strong><span>prezzo energia</span></div>
+      <div class="num"><strong>${money(r.c100)}</strong><span>/ 100 km</span></div>
+      <div class="num"><strong>${money(r.year)}</strong><span>/ anno</span></div>
+      <div class="num">${deltaHtml}</div>
+    </div>`;
+  }).join("");
+}
+
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+  b.classList.add("active");
+  segment = b.dataset.segment;
+  render();
+}));
+
+document.querySelectorAll(".charge-btn").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".charge-btn").forEach(x => x.classList.remove("active"));
+  b.classList.add("active");
+  chargeMode = b.dataset.mode;
+  render();
+}));
+
+const range = document.getElementById("kmRange");
+const input = document.getElementById("kmInput");
+range.addEventListener("input", () => { input.value = range.value; render(); });
+input.addEventListener("input", () => { range.value = Math.min(50000, Math.max(5000, input.value||5000)); render(); });
+document.getElementById("homePrice").addEventListener("input", render);
+
+render();
+</script>
+</body>
+</html>
